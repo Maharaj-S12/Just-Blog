@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-//passKey: 2ZdEV2LxpKDVssVa
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URL);
