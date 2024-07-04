@@ -2,9 +2,7 @@ const mongoose = require("mongoose");
 //passKey: 2ZdEV2LxpKDVssVa
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(
-      "mongodb+srv://maharajshankar012:2ZdEV2LxpKDVssVa@mern-blog.3vv4bkp.mongodb.net/Mern-blog?retryWrites=true&w=majority&appName=Mern-blog"
-    );
+    const conn = await mongoose.connect(process.env.MONGO_URL);
     console.log(`Mangodb connected ${conn.connection.host}`);
   } catch (error) {
     console.error(`error connecting to MangoDB ${error.message}`);
