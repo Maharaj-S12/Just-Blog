@@ -10,11 +10,21 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware.js");
 const app = express();
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ 
+// app.use(cors({ 
+//   origin: ["https://just-blog-client-git-main-maharaj-projects.vercel.app"],
+//   methods : ["POST","GET","PATCH","DELETE"],
+//   credentials: true
+// }));
+const corsOptions = {
   origin: ["https://just-blog-client-git-main-maharaj-projects.vercel.app"],
-  methods : ["POST","GET","PATCH","DELETE"],
-  credentials: true
-}));
+  methods: ["POST", "GET", "PATCH", "DELETE"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+// Explicitly handle preflight requests
+app.options("*", cors(corsOptions));
+
 app.use(upload());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
