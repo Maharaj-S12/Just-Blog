@@ -22,7 +22,7 @@ const Register = () => {
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/users/register`,
-        userData
+        userData , {withCredentials: true,}
       );
       const newUser = await response.data;
       console.log(newUser);
