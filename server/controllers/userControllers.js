@@ -8,38 +8,78 @@ const { v4: uuid } = require("uuid");
 //===================Register-User===============================
 //POST : api/users/register
 //UNPROTECTED
+// const registerUser = async (req, res, next) => {
+//   try {
+//     const { name, email, password, password2 } = req.body;
+//     if (!name || !email || !password) {
+//       return next(new HttpError("Fill in all fields.", 422));
+//     }
+
+//     const newEmail = email.toLowerCase();
+
+//     const emailExists = await User.findOne({ email: newEmail });
+//     if (emailExists) {
+//       return next(new HttpError("Email already exists.", 422));
+//     }
+//     if (password.trim().length < 6) {
+//       return next(
+//         new HttpError("Password should be at least 6 characters.", 422)
+//       );
+//     }
+//     if (password != password2) {
+//       return next(new HttpError("Password do not match", 422));
+//     }
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPass = await bcrypt.hash(password, salt);
+//     const newUser = await User.create({
+//       name,
+//       email: newEmail,
+//       password: hashedPass,
+//     });
+
+//     res.status(201).json(`New user ${newUser.email} registered.`);
+//   } catch (error) {
+//     return next(new HttpError("User registration failed", 422));
+//   }
+// };
 const registerUser = async (req, res, next) => {
+  const { name, email, password, password2 } = req.body;
+
+  if (!name || !email || !password || !password2) {
+    return next(new HttpError("Please fill in all fields.", 422));
+  }
+
+  if (password !== password2) {
+    return next(new HttpError("Passwords do not match.", 422));
+  }
+
+  if (password.trim().length < 6) {
+    return next(new HttpError("Password should be at least 6 characters.", 422));
+  }
+
+  const newEmail = email.toLowerCase();
+
   try {
-    const { name, email, password, password2 } = req.body;
-    if (!name || !email || !password) {
-      return next(new HttpError("Fill in all fields.", 422));
-    }
-
-    const newEmail = email.toLowerCase();
-
     const emailExists = await User.findOne({ email: newEmail });
     if (emailExists) {
       return next(new HttpError("Email already exists.", 422));
     }
-    if (password.trim().length < 6) {
-      return next(
-        new HttpError("Password should be at least 6 characters.", 422)
-      );
-    }
-    if (password != password2) {
-      return next(new HttpError("Password do not match", 422));
-    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(password, salt);
-    const newUser = await User.create({
+
+    const newUser = new User({
       name,
       email: newEmail,
       password: hashedPass,
     });
 
-    res.status(201).json(`New user ${newUser.email} registered.`);
+    await newUser.save();
+
+    res.status(201).json({ message: `New user ${newUser.email} registered.` });
   } catch (error) {
-    return next(new HttpError("User registration failed", 422));
+    console.error('Error during user registration:', error);
+    return next(new HttpError("User registration failed. Please try again later.", 500));
   }
 };
 //======================LOGIN============================
